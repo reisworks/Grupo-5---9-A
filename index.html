@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Monte sua pizza</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<style>
+:root{--tomate:#C73A25;--verde:#1F4D36;--verde2:#2B6548;--madeira:#B98550;--tinta:#1B1511;--queijo:#F6D56B;--texto:#F4F1E8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--tomate:#8F2A1A;--verde:#143325;--verde2:#1E4733}}
+:root[data-theme="dark"]{--tomate:#8F2A1A;--verde:#143325;--verde2:#1E4733}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{font-family:"Bricolage Grotesque",system-ui,sans-serif;color:var(--tinta);background-color:var(--tomate);
+background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.2) 0 28px,transparent 28px 56px),repeating-linear-gradient(90deg,rgba(255,255,255,.2) 0 28px,transparent 28px 56px)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--queijo);outline-offset:2px}
+.app{min-height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column}
+.ticket{background:#fff;margin:12px 12px 0;padding:12px 14px;border-radius:8px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.ticket div{flex:1}
+.ticket h1{font-size:17px;font-weight:800;margin:0 0 2px}
+.ticket p{margin:0;font-size:15px;line-height:1.35}
+.ticket small{display:block;margin-top:4px;font-size:13px;opacity:.7}
+.skip{border:2px solid var(--tinta);background:none;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;white-space:nowrap}
+.board{display:grid;place-items:center;padding:14px 0}
+.board svg{width:min(90vw,44vh,400px);height:auto;filter:drop-shadow(0 8px 0 rgba(0,0,0,.25))}
+#pizza circle{transition:fill .3s}
+.drop{animation:drop .28s cubic-bezier(.3,1.5,.6,1);transform-origin:0 0}
+@keyframes drop{from{transform:scale(2.2);opacity:0}to{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.drop{animation:none}}
+.panel{margin-top:auto;background:var(--verde);color:var(--texto);border-radius:22px 22px 0 0;padding:14px 14px 18px}
+.tabs{display:flex;gap:4px;border-bottom:2px solid rgba(255,255,255,.15);margin-bottom:12px}
+.tabs button{flex:1;background:none;border:0;padding:10px 2px;font-size:15px;font-weight:600;opacity:.65;border-bottom:4px solid transparent;margin-bottom:-2px}
+.tabs button[aria-selected="true"]{opacity:1;border-bottom-color:var(--queijo)}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;min-height:116px;align-content:start}
+.opts.four{grid-template-columns:repeat(4,1fr)}
+.chip{position:relative;display:flex;align-items:center;gap:10px;min-height:52px;padding:8px 12px;background:rgba(255,255,255,.1);border:2px solid transparent;border-radius:14px;text-align:left;font-weight:600;font-size:15px}
+.opts.four .chip{flex-direction:column;justify-content:center;gap:2px;text-align:center;font-size:12.5px;padding:6px 2px;min-height:64px}
+.chip[aria-pressed="true"]{border-color:var(--queijo);background:rgba(246,213,107,.2)}
+.chip b{position:absolute;top:-6px;right:-4px;background:var(--queijo);color:var(--tinta);border-radius:999px;min-width:22px;height:22px;display:grid;place-items:center;font-size:12px;padding:0 5px}
+.sw{width:26px;height:26px;border-radius:50%;flex:none;border:2px solid rgba(255,255,255,.5)}
+.sw.none{border-style:dashed;background:none}
+.ci{width:28px;height:28px;border-radius:50%;flex:none;border:0 solid #EBC27A;background:#C73A25;box-sizing:border-box}
+.hint{min-height:20px;margin:8px 2px 0;font-size:14px;opacity:.85}
+.row{display:flex;gap:8px;margin-top:6px}
+.ghost{background:none;border:2px solid rgba(255,255,255,.4);border-radius:14px;padding:12px 14px;font-weight:600;font-size:15px}
+.go{flex:1;background:var(--queijo);color:var(--tinta);border:0;border-radius:14px;padding:14px;font-weight:800;font-size:17px;box-shadow:0 4px 0 rgba(0,0,0,.3)}
+.go:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+.track{position:relative;height:30px;border-radius:15px;background:linear-gradient(90deg,#4B6FA8,#E0A33A 45%,#C73A25);margin:18px 0 6px;overflow:hidden}
+.zone{position:absolute;top:0;bottom:0;left:55%;width:25%;background:rgba(80,200,110,.75);border:3px solid #fff;border-radius:6px}
+.mark{position:absolute;top:0;bottom:0;width:6px;margin-left:-3px;background:var(--tinta);border-radius:3px;left:0}
+.tl{display:flex;justify-content:space-between;font-size:13px;opacity:.8;margin-bottom:14px}
+.olabel{margin:0;font-size:17px;font-weight:600}
+.stars{font-size:34px;letter-spacing:4px;color:var(--queijo);line-height:1}
+.pts{font-size:15px;opacity:.85;margin:2px 0 8px}
+.msg{font-size:19px;font-weight:800;margin:0 0 10px;line-height:1.25}
+.checks{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:5px;font-size:15px}
+.checks .no{color:#FFB4A6}
+.checks .ok{color:#B8EBC4}
+@media (min-width:560px){.board svg{width:min(400px,44vh)}}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="ticket">
+    <div>
+      <h1 id="who"></h1>
+      <p id="want"></p>
+      <small>Mínimo de 3 pedaços de cada cobertura pedida.</small>
+    </div>
+    <button class="skip" id="skip">Outro pedido</button>
+  </header>
+
+  <section class="board">
+    <svg id="pizza" viewBox="0 0 300 300" role="img" aria-label="Pizza só com massa">
+      <defs>
+        <radialGradient id="bk"><stop offset="0" stop-color="#9A5A1A" stop-opacity=".25"/><stop offset=".75" stop-color="#8A4710" stop-opacity=".55"/><stop offset="1" stop-color="#4A2008"/></radialGradient>
+        <clipPath id="cc"><circle id="cclip" cx="150" cy="150" r="0"/></clipPath>
+        <g id="t-calabresa"><circle r="13" fill="#B23A2B" stroke="#8E2619" stroke-width="2"/><circle cx="-4" cy="-4" r="2.2" fill="#D8604A"/><circle cx="5" cy="-2" r="2" fill="#D8604A"/><circle cx="0" cy="5" r="2.4" fill="#D8604A"/></g>
+        <g id="t-azeitona"><circle r="8" fill="none" stroke="#2A2230" stroke-width="5"/></g>
+        <g id="t-cogumelo"><path d="M-12 2a12 10 0 0 1 24 0z" fill="#E8DCC8" stroke="#B9A98E" stroke-width="1.5"/><rect x="-4" y="2" width="8" height="9" rx="2" fill="#E8DCC8" stroke="#B9A98E" stroke-width="1.5"/></g>
+        <g id="t-pimentao"><path d="M-12 5Q0-14 12 5" fill="none" stroke="#3F8F3A" stroke-width="5" stroke-linecap="round"/></g>
+        <g id="t-manjericao"><path d="M0-12C10-8 10 6 0 12C-10 6-10-8 0-12Z" fill="#2F7D3B"/><path d="M0-9V10" stroke="#1F5A2A" stroke-width="1.5"/></g>
+        <g id="t-tomate"><circle r="11" fill="#E04A33" stroke="#B3301F" stroke-width="2"/><circle r="5.5" fill="#F27A5E"/></g>
+        <g id="t-cebola"><circle r="11" fill="none" stroke="#D9B6E0" stroke-width="2.5"/><circle r="5.5" fill="none" stroke="#D9B6E0" stroke-width="2"/></g>
+        <g id="t-milho"><circle cx="-5" cy="-3" r="4" fill="#F5C518"/><circle cx="4" cy="-4" r="4" fill="#F5C518"/><circle cx="0" cy="4" r="4" fill="#F5C518"/></g>
+      </defs>
+      <circle cx="150" cy="150" r="149" fill="var(--madeira)"/>
+      <circle cx="150" cy="150" r="145" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="2"/>
+      <circle cx="150" cy="153" r="138" fill="rgba(0,0,0,.25)"/>
+      <circle id="crust" cx="150" cy="150" r="136" fill="#EBC27A"/>
+      <circle id="bumps" cx="150" cy="150" r="120" fill="none" stroke="rgba(150,90,25,.4)" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>
+      <circle id="groove" cx="150" cy="150" r="117" fill="none" stroke="rgba(120,70,20,.35)" stroke-width="2"/>
+      <circle id="sauce" cx="150" cy="150" r="0" fill="#C8321F"/>
+      <circle id="cheese" cx="150" cy="150" r="0" fill="#F6D56B"/>
+      <g id="lumps" clip-path="url(#cc)"></g>
+      <g id="tops"></g>
+      <circle id="b1" cx="150" cy="150" r="136" fill="url(#bk)" opacity="0" pointer-events="none"/>
+      <circle id="b2" cx="150" cy="150" r="136" fill="#150A04" opacity="0" pointer-events="none"/>
+    </svg>
+  </section>
+
+  <section class="panel" id="p-montar">
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div class="opts" id="opts"></div>
+    <p class="hint" id="hint" role="status"></p>
+    <div class="row">
+      <button class="ghost" id="undo">Desfazer</button>
+      <button class="ghost" id="clear">Limpar</button>
+      <button class="go" id="bake">Assar pizza</button>
+    </div>
+  </section>
+
+  <section class="panel" id="p-forno" hidden>
+    <p class="olabel">No forno. Tire quando o marcador estiver na faixa verde.</p>
+    <div class="track"><span class="zone"></span><span class="mark" id="mark"></span></div>
+    <div class="tl"><span>Crua</span><span>Queimada</span></div>
+    <div class="row"><button class="go" id="out">Tirar do forno</button></div>
+  </section>
+
+  <section class="panel" id="p-result" hidden aria-live="polite"></section>
+</main>
+
+<script>
+(()=>{
+const $=s=>document.querySelector(s);
+const NS="http://www.w3.org/2000/svg";
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const CRUSTS={fina:{n:"Fina",r:126,b:3},tradicional:{n:"Tradicional",r:116,b:6},recheada:{n:"Recheada",r:104,b:10}};
+const SAUCES={tomate:{n:"Tomate",c:"#C8321F"},branco:{n:"Molho branco",c:"#F1E4C4"},pesto:{n:"Pesto",c:"#5E8C3A"},nenhum:{n:"Sem molho",c:null}};
+const CHEESES={mussarela:{n:"Muçarela",c:"#F6D56B"},catupiry:{n:"Catupiry",c:"#FBF1D3"},nenhum:{n:"Sem queijo",c:null}};
+const TOPS={calabresa:"Calabresa",azeitona:"Azeitona",cogumelo:"Cogumelo",pimentao:"Pimentão",manjericao:"Manjericão",tomate:"Tomate",cebola:"Cebola",milho:"Milho"};
+const NOMES=["Dona Rita","Seu Zé","Bia","Tio Marcos","Dona Lúcia","Caio"];
+const TABS={massa:"Massa",molho:"Molho",queijo:"Queijo",cobertura:"Cobertura"};
+const NEXT={crust:"molho",sauce:"queijo",cheese:"cobertura"};
+let S,order,tab,phase,bake,raf;
+
+const lower=s=>s.toLowerCase();
+const list=a=>a.length<2?a.join(""):a.slice(0,-1).join(", ")+" e "+a[a.length-1];
+const count=k=>S.tops.filter(p=>p.t===k).length;
+const setR=(el,r)=>{el.setAttribute("r",r);el.style.r=r+"px"};
+
+function newOrder(){
+  const keys=Object.keys(TOPS).sort(()=>Math.random()-.5).slice(0,2+Math.floor(Math.random()*2));
+  order={who:pick(NOMES),crust:pick(["fina","tradicional","recheada"]),sauce:pick(["tomate","branco","pesto"]),cheese:pick(["mussarela","catupiry"]),tops:keys};
+  const parts=["massa "+lower(CRUSTS[order.crust].n),lower(SAUCES[order.sauce].n==="Tomate"?"molho de tomate":SAUCES[order.sauce].n==="Pesto"?"molho pesto":"molho branco"),lower(CHEESES[order.cheese].n),...keys.map(k=>lower(TOPS[k]))];
+  $("#who").textContent="Pedido de "+order.who;
+  $("#want").textContent=order.who+" quer "+list(parts)+".";
+}
+function show(p){["montar","forno","result"].forEach(n=>$("#p-"+n).hidden=n!==p)}
+function reset(){
+  cancelAnimationFrame(raf);
+  S={crust:"tradicional",sauce:"nenhum",cheese:"nenhum",tops:[]};bake=0;phase="montar";tab="massa";
+  show("montar");draw();renderTops();renderTabs();renderOpts();paintBake();$("#hint").textContent="";
+}
+
+function draw(){
+  const r=CRUSTS[S.crust].r,sc=SAUCES[S.sauce].c,cc=CHEESES[S.cheese].c;
+  if(sc)$("#sauce").setAttribute("fill",sc);
+  if(cc)$("#cheese").setAttribute("fill",cc);
+  setR($("#sauce"),sc?r-3:0);
+  const cr=cc?(sc?r-10:r-3):0;
+  setR($("#cheese"),cr);setR($("#cclip"),cr);
+  setR($("#groove"),r+1);setR($("#bumps"),(r+136)/2);
+  $("#bumps").style.opacity=S.crust==="recheada"?1:0;
+  const R=r-16;
+  S.tops.forEach(p=>{const dx=p.x-150,dy=p.y-150,d=Math.hypot(dx,dy);if(d>R){p.x=150+dx/d*R;p.y=150+dy/d*R}});
+  renderTops();
+  $("#pizza").setAttribute("aria-label","Pizza de massa "+lower(CRUSTS[S.crust].n)+", "+lower(SAUCES[S.sauce].n)+", "+lower(CHEESES[S.cheese].n)+", com "+S.tops.length+" coberturas");
+}
+function lumps(){
+  const g=$("#lumps");
+  for(let i=0;i<16;i++){const a=Math.random()*6.28,d=Math.sqrt(Math.random())*110,c=document.createElementNS(NS,"circle");
+    c.setAttribute("cx",150+Math.cos(a)*d);c.setAttribute("cy",150+Math.sin(a)*d);c.setAttribute("r",6+Math.random()*9);c.setAttribute("fill","#fff");c.setAttribute("opacity",".2");g.appendChild(c)}
+}
+function renderTops(newest){
+  const g=$("#tops");g.innerHTML="";
+  S.tops.forEach((p,i)=>{
+    const w=document.createElementNS(NS,"g");w.setAttribute("transform","translate("+p.x+" "+p.y+") rotate("+p.a+") scale("+p.s+")");
+    const u=document.createElementNS(NS,"use");u.setAttribute("href","#t-"+p.t);
+    if(newest&&i===S.tops.length-1)u.setAttribute("class","drop");
+    w.appendChild(u);g.appendChild(w);
+  });
+}
+function addTop(t){
+  if(phase!=="montar")return;
+  if(S.tops.length>=26){$("#hint").textContent="A pizza está cheia. Use Desfazer para tirar uma cobertura.";return}
+  const R=CRUSTS[S.crust].r-16;let best=null,bd=-1;
+  for(let i=0;i<40;i++){
+    const a=Math.random()*6.28,d=Math.sqrt(Math.random())*R,x=150+Math.cos(a)*d,y=150+Math.sin(a)*d;
+    const md=S.tops.reduce((m,p)=>Math.min(m,Math.hypot(p.x-x,p.y-y)),999);
+    if(md>bd){bd=md;best={x,y}}
+  }
+  S.tops.push({t,x:best.x,y:best.y,a:Math.random()*360,s:.9+Math.random()*.25});
+  $("#hint").textContent="";
+  renderTops(true);renderOpts();
+  $("#pizza").setAttribute("aria-label","Pizza com "+S.tops.length+" coberturas");
+}
+
+function renderTabs(){
+  $("#tabs").innerHTML=Object.keys(TABS).map(k=>'<button role="tab" data-t="'+k+'" aria-selected="'+(tab===k)+'">'+TABS[k]+"</button>").join("");
+}
+function chip(g,k,ico,label,sel,badge){
+  return '<button class="chip" data-g="'+g+'" data-k="'+k+'"'+(sel===null?"":' aria-pressed="'+sel+'"')+">"+ico+"<span>"+label+"</span>"+(badge?"<b>"+badge+"</b>":"")+"</button>";
+}
+function renderOpts(){
+  const o=$("#opts");let h="";
+  o.className="opts"+(tab==="cobertura"?" four":"");
+  if(tab==="massa")for(const k in CRUSTS)h+=chip("crust",k,'<i class="ci" style="border-width:'+CRUSTS[k].b+'px"></i>',CRUSTS[k].n,S.crust===k);
+  if(tab==="molho")for(const k in SAUCES){const c=SAUCES[k].c;h+=chip("sauce",k,'<i class="sw'+(c?"":" none")+'" style="'+(c?"background:"+c:"")+'"></i>',SAUCES[k].n,S.sauce===k)}
+  if(tab==="queijo")for(const k in CHEESES){const c=CHEESES[k].c;h+=chip("cheese",k,'<i class="sw'+(c?"":" none")+'" style="'+(c?"background:"+c:"")+'"></i>',CHEESES[k].n,S.cheese===k)}
+  if(tab==="cobertura")for(const k in TOPS)h+=chip("top",k,'<svg viewBox="-15 -15 30 30" width="30" height="30" aria-hidden="true"><use href="#t-'+k+'"/></svg>',TOPS[k],null,count(k)||"");
+  o.innerHTML=h;
+}
+
+function paintBake(){
+  $("#b1").setAttribute("opacity",Math.min(.85,bake*.9));
+  $("#b2").setAttribute("opacity",bake>.8?(bake-.8)/.2*.85:0);
+}
+function startBake(){
+  phase="forno";show("forno");
+  const t0=performance.now(),D=7000;
+  const step=n=>{
+    bake=Math.min(1,(n-t0)/D);paintBake();$("#mark").style.left=bake*100+"%";
+    if(bake>=1)finish();else raf=requestAnimationFrame(step);
+  };
+  raf=requestAnimationFrame(step);
+}
+function finish(){
+  cancelAnimationFrame(raf);phase="resultado";
+  const rows=[];let pts=0;
+  const row=(ok,t)=>rows.push('<li class="'+(ok?"ok":"no")+'">'+(ok?"✓ ":"✗ ")+t+"</li>");
+  const one=(g,label,T)=>{
+    const ok=S[g]===order[g];if(ok)pts+=10;
+    row(ok,ok?label+" "+lower(T[order[g]].n):label+": pediu "+lower(T[order[g]].n)+", você fez "+lower(T[S[g]].n));
+  };
+  one("crust","Massa",CRUSTS);one("sauce","Molho",SAUCES);one("cheese","Queijo",CHEESES);
+  const per=40/order.tops.length;
+  order.tops.forEach(k=>{const c=count(k);pts+=per*Math.min(c,3)/3;row(c>=3,c>=3?TOPS[k]+" ("+c+")":TOPS[k]+": só "+c+" de 3")});
+  Object.keys(TOPS).filter(k=>!order.tops.includes(k)&&count(k)>0).forEach(k=>{pts-=6;row(false,TOPS[k]+": ninguém pediu")});
+  const b=bake;
+  pts+=b<.55?30*b/.55:b<=.8?30:30*(1-(b-.8)/.2);
+  row(b>=.55&&b<=.8,b<.55?"Forno: saiu crua":b<=.8?"Forno no ponto":"Forno: queimou");
+  const total=Math.max(0,Math.round(pts));
+  const st=total>=90?5:total>=75?4:total>=55?3:total>=35?2:1;
+  const msg=["","Vamos refazer essa.","O cliente comeu, com educação.","Deu pro gasto.","Quase perfeita!","Perfeita! O cliente já pediu outra."][st];
+  $("#p-result").innerHTML='<div class="stars" aria-label="'+st+' de 5 estrelas">'+"★".repeat(st)+"☆".repeat(5-st)+'</div><div class="pts">'+total+" pontos</div><p class=\"msg\">"+msg+'</p><ul class="checks">'+rows.join("")+'</ul><div class="row"><button class="ghost" id="again">Refazer</button><button class="go" id="next">Próximo cliente</button></div>';
+  show("result");
+}
+
+$("#tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;tab=b.dataset.t;renderTabs();renderOpts()});
+$("#opts").addEventListener("click",e=>{
+  const b=e.target.closest(".chip");if(!b||phase!=="montar")return;
+  const g=b.dataset.g,k=b.dataset.k;
+  if(g==="top"){addTop(k);return}
+  S[g]=k;tab=NEXT[g];draw();renderTabs();renderOpts();
+});
+$("#undo").addEventListener("click",()=>{if(phase!=="montar")return;S.tops.pop();renderTops();renderOpts();$("#hint").textContent=""});
+$("#clear").addEventListener("click",()=>{if(phase!=="montar")return;S.tops=[];renderTops();renderOpts();$("#hint").textContent=""});
+$("#bake").addEventListener("click",startBake);
+$("#out").addEventListener("click",finish);
+$("#skip").addEventListener("click",()=>{newOrder();reset()});
+$("#p-result").addEventListener("click",e=>{
+  if(e.target.id==="again")reset();
+  if(e.target.id==="next"){newOrder();reset()}
+});
+
+lumps();newOrder();reset();
+})();
+</script>
+</body>
+</html>
